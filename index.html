@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Recovery Pro - Recover Deleted Photos, Videos & Files</title>
+    <meta name="description" content="Effortlessly recover deleted photos, videos, audio, and lost documents with Photo Recovery Pro. Deep scanning, instant preview, and 100% safe on-device recovery.">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Photo Recovery Pro">
+    <meta property="og:description" content="Quickly restore deleted photos, videos, and files on Android.">
+    <meta property="og:image" content="assets/icon.png">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #0a0f1d;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --text-primary: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient Glow */
+        .glow-sphere {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-1 { top: -100px; left: -100px; background: var(--primary); }
+        .glow-2 { bottom: 10%; right: -100px; background: var(--secondary); }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 15, 29, 0.85);
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .brand img {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-card);
+            color: #fff !important;
+            padding: 8px 18px;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 90px 0 60px;
+            text-align: center;
+        }
+
+        .badge-verified {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .badge-verified span.dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 36px;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 48px;
+        }
+
+        .btn-play {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-card);
+            color: var(--text-primary);
+            padding: 14px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Verification Banner */
+        .verification-box {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px 24px;
+            max-width: 760px;
+            margin: 0 auto 60px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .verification-info h4 {
+            font-size: 1rem;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verification-info code {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #93c5fd;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+
+        .verification-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .verification-link {
+            font-size: 0.85rem;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .verification-link:hover {
+            background: var(--primary);
+        }
+
+        /* Features */
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 18px;
+            padding: 32px 28px;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            backdrop-filter: blur(12px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-section {
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.8) 0%, rgba(10, 15, 29, 0.9) 100%);
+            border: 1px solid var(--border-card);
+            border-radius: 24px;
+            padding: 48px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .stat-item h3 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #60a5fa;
+            margin-bottom: 4px;
+        }
+
+        .stat-item p {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* How it Works */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .step-card {
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 18px;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .step-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 48px 0 32px;
+            background: #080c16;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 60px 0 40px; }
+            .verification-box { flex-direction: column; align-items: flex-start; }
+            .verification-actions { width: 100%; }
+            .verification-link { flex: 1; text-align: center; }
+            .stats-section { padding: 32px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-sphere glow-1"></div>
+    <div class="glow-sphere glow-2"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-nav">
+            <a href="#" class="brand">
+                <img src="assets/icon.png" alt="Photo Recovery Pro Icon">
+                <span>Photo Recovery Pro</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="app-ads.txt" class="nav-btn">app-ads.txt</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+
+            <!-- Hero -->
+            <section class="hero">
+                <div class="badge-verified">
+                    <span class="dot"></span> Official Verification & App Landing
+                </div>
+                <h1>Recover Lost Photos & Videos<br><span class="text-gradient">Fast, Safe & Effortless</span></h1>
+                <p class="hero-desc">
+                    Accidentally deleted your memorable photos, videos, or audio records? 
+                    Photo Recovery Pro scans deep into internal and SD storage to bring back your precious moments in seconds.
+                </p>
+                <div class="cta-group">
+                    <a href="https://play.google.com/store/apps/details?id=photorecovery.files" class="btn-play" target="_blank" rel="noopener">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3.609 1.814L13.793 12 3.61 22.186a2.235 2.235 0 0 1-.61-.39 2.253 2.253 0 0 1-.65-1.63V3.834c0-.623.235-1.218.65-1.63.178-.178.388-.31.61-.39zm11.246 11.247l2.25 2.25-10.74 6.198 8.49-8.448zm0-2.122L6.365 2.491 17.105 8.69l-2.25 2.25zm1.414 1.061l3.535 2.04c1.173.677 1.173 1.78 0 2.457l-3.535 2.04-1.94-1.94 1.94-1.94z"/>
+                        </svg>
+                        Get it on Google Play
+                    </a>
+                    <a href="app-ads.txt" class="btn-outline">
+                        <span>Check app-ads.txt</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Verification Box -->
+                <div class="verification-box">
+                    <div class="verification-info">
+                        <h4>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            AdMob app-ads.txt Authorized Seller Record
+                        </h4>
+                        <code>google.com, pub-1931684763933703, DIRECT, f08c47fec0942fa0</code>
+                    </div>
+                    <div class="verification-actions">
+                        <a href="app-ads.txt" class="verification-link" target="_blank">app-ads.txt</a>
+                        <a href="ads.txt" class="verification-link" target="_blank">ads.txt</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats -->
+            <section class="stats-section">
+                <div class="stat-item">
+                    <h3>100%</h3>
+                    <p>On-Device Privacy</p>
+                </div>
+                <div class="stat-item">
+                    <h3>1M+</h3>
+                    <p>Recovered Media Files</p>
+                </div>
+                <div class="stat-item">
+                    <h3>0.0s</h3>
+                    <p>Cloud Uploads (Offline Scan)</p>
+                </div>
+                <div class="stat-item">
+                    <h3>4.8★</h3>
+                    <p>User Satisfaction</p>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section id="features" style="padding: 40px 0;">
+                <div class="section-title">
+                    <h2>Powerful File Recovery Engine</h2>
+                    <p>Designed with state-of-the-art storage scanning algorithms to retrieve your data without root access.</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Deep Storage Scan</h3>
+                        <p>Thoroughly inspects internal flash and SD card caches, thumbnails, and raw sectors to locate lost media.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🖼️</div>
+                        <h3>Photo & Video Recovery</h3>
+                        <p>Restores JPEG, PNG, WEBP, MP4, MOV, MKV, and audio formats with zero loss in visual resolution.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">👁️</div>
+                        <h3>Instant File Preview</h3>
+                        <p>Preview recovered images and play videos directly before restoring to confirm you have the right files.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>Zero Data Collection</h3>
+                        <p>All operations are processed strictly on your smartphone. We never access, store, or upload your media to any server.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Fast One-Tap Restore</h3>
+                        <p>Select your files and restore them straight back to your public gallery or custom destination folder in seconds.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📂</div>
+                        <h3>Smart Sorting & Filter</h3>
+                        <p>Easily filter scans by file type, modification date, and size to quickly locate what you need without scrolling endlessly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works -->
+            <section id="how-it-works" style="padding: 40px 0 80px;">
+                <div class="section-title">
+                    <h2>How It Works</h2>
+                    <p>Three straightforward steps to bring your memories back.</p>
+                </div>
+
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Launch Deep Scan</h3>
+                        <p>Open the app and choose whether to scan photos, videos, or all documents with a single click.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Preview Results</h3>
+                        <p>Browse through high-resolution thumbnails and filter by date, album, or file size.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Instant Recovery</h3>
+                        <p>Tap "Recover" to restore selected files directly into your device photo gallery safely.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-top">
+                <a href="#" class="brand">
+                    <img src="assets/icon.png" alt="Photo Recovery Pro">
+                    <span>Photo Recovery Pro</span>
+                </a>
+                <div class="footer-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="app-ads.txt">app-ads.txt</a>
+                    <a href="ads.txt">ads.txt</a>
+                    <a href="https://github.com/elhoucein/photorecovery" target="_blank" rel="noopener">GitHub Repository</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Photo Recovery Pro. All rights reserved. Package: <code>photorecovery.files</code></p>
+                <p>Google AdMob Publisher: <code>pub-1931684763933703</code></p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
